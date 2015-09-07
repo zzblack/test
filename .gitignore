@@ -1,0 +1,107 @@
+/***************************************
+      zzblack                         **
+      2015-09-07                      **
+      Orz                             **
+****************************************/
+#include <set>
+#include <map>
+#include <queue>
+#include <stack>
+#include <cmath>
+#include <string>
+#include <cctype>
+#include <cstdio>
+#include <vector>
+#include <cstdlib>
+#include <cstring>
+#include <iomanip>
+#include <sstream>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+#define ls id<<1,l,mid
+#define rs id<<1|1,mid+1,r
+#define OFF(x) memset(x,-1,sizeof x)
+#define CLR(x) memset(x,0,sizeof x)
+#define MEM(x) memset(x,0x3f,sizeof x)
+typedef long long ll ;
+typedef pair<int,int> pii ;
+const int maxn = 1e5+50 ;
+const int inf = 0x3f3f3f3f ;
+const int MOD = 1e9+7 ;
+
+vector<char> List;
+string s;
+int indeg[50], vis[50], cnt, e[50][50];
+vector<int> G[50];
+
+void init(int n) {
+    for (int i = 0; i <= 40; i++) G[i].clear();
+    CLR(indeg);CLR(e);
+    List.clear();
+}
+
+void dfs(int u, string path) {
+//    cout << u << "\n" ;
+    path += List[u - 1];
+    if (path.size() == cnt) {
+        cout << path << "\n" ;
+        return ;
+    }
+    vis[u] = 1;
+    for (int i = 0; i < G[u].size(); i++) indeg[G[u][i]]--;
+    for (int i = 1; i <= cnt; i++) {
+        if (indeg[i] || vis[i]) continue ;
+        dfs(i, path);
+    }
+    for (int i = 0; i < G[u].size(); i++) indeg[G[u][i]]++;
+    vis[u] = 0;
+}
+
+int get(char c) {
+    for (int i = 0; i < cnt; i++)
+        if (List[i] == c) return i + 1;
+}
+
+
+int main () {
+#ifdef LOCAL
+	freopen("C:\\Users\\Administrator\\Desktop\\in.txt","r",stdin);
+//      freopen("C:\\Users\\Administrator\\Desktop\\out.txt","w",stdout);
+#endif
+//    ios_base::sync_with_stdio(0);
+    int flag = 0;
+    while (getline(cin, s)) {
+        if (flag)
+            cout << "\n" ;
+        flag = 1;
+        stringstream ss(s);
+        char x, y;
+        cnt = 0;
+        List.clear();
+        while (ss >> x)
+            List.push_back(x), cnt++;
+        sort(List.begin(), List.end());
+        init(cnt);
+//        cout << "cnt = " << cnt << "\n" ;
+        getline(cin, s);
+        stringstream Ss(s);
+        while (Ss >> x >> y) {
+            int u = get(x), v = get(y);
+            if (e[u][v])continue;
+            e[u][v] = 1;
+//            cout << u << " " << v << "\n" ;
+            G[u].push_back(v);
+            indeg[v]++;
+        }
+        for (int i = 1; i <= cnt; i++)
+            sort(G[i].begin(), G[i].end());
+        CLR(vis);
+        for (int i = 1; i <= cnt; i++) {
+            if (indeg[i]) continue ;
+            CLR(vis);
+            dfs(i, "");
+        }
+    }
+	return 0;
+}
